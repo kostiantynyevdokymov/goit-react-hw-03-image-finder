@@ -3,6 +3,9 @@ import AppStyled from './App.styled';
 import getImage from '../servies/api';
 import SearchForm from './Searchbar/SearchForm/SearchForm';
 import Searchbar from './Searchbar/Searchbar';
+import ImageGallery from './ImageGallery/ImageGallery';
+import Button from './Button/Button';
+import Loader from './Loader/Loader';
 
 export class App extends Component {
   state = {
@@ -14,7 +17,7 @@ export class App extends Component {
     imageURL: null,
   };
   componentDidUpdate(_, prevState) {
-    if (prevState !== this.state.gallery) {
+    if (prevState.gallery !== this.state.gallery) {
       this.setState({ loading: false });
     }
   }
@@ -33,13 +36,42 @@ export class App extends Component {
       })
     );
   };
+  handleLoadMoreBtn = async () => {
+    await this.setState(prevState => {
+      return { page: prevState.page + 1, loading: true };
+    });
+    getImage(this.state.query, this.state.page).then(data =>
+      this.setState(prevState => {
+        return { gallery: [...prevState.gallery, ...data.hits] };
+      })
+    );
+  };
+
+  onClickGalleryImage = imageURL => {
+    this.setState({ imageURL });
+  };
 
   render() {
-    // const { gallery, imageURL, total } = this.state;
+    const { gallery, imageURL, total } = this.state;
     return (
-      <Searchbar>
-        <SearchForm onSubmit={this.handleSubmit} />
-      </Searchbar>
+      <AppStyled>
+        <Searchbar>
+          <SearchForm onSubmit={this.handleSubmit} />
+        </Searchbar>
+        {gallery.length > 0 && (
+          <>
+            <ImageGallery
+              galleryList={gallery}
+              onClick={this.onClickGalleryImage}
+              imageURL={imageURL}
+            />
+            {total !== gallery.length && (
+              <Button text="Load more" onClick={this.handleLoadMoreBtn} />
+            )}
+          </>
+        )}
+        {this.state.loading && <Loader />}
+      </AppStyled>
     );
   }
 }

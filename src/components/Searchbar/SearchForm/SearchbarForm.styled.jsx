@@ -15,7 +15,7 @@ export const SearchFormBtnStyled = styled.button`
   width: 48px;
   height: 48px;
   border: 0;
-  background-image: url('https://image.flaticon.com/icons/svg/149/149852.svg');
+  /* background-image: url('https://image.flaticon.com/icons/svg/149/149852.svg'); */
   background-size: 40%;
   background-repeat: no-repeat;
   background-position: center;
@@ -43,11 +43,12 @@ export const SearchFormBtnLabel = styled.label`
 
 export const SearchFormInputStyle = styled.input`
   margin-right: 5px;
+  margin-left: 5px;
   display: inline-block;
   width: 100%;
   font: inherit;
   font-size: 20px;
-  border: 1px solid black;
+  border: none;
   outline: none;
   padding-left: 4px;
   padding-right: 4px;
