@@ -15,36 +15,49 @@ export class App extends Component {
     total: null,
     loading: false,
     imageURL: null,
+    name: null,
   };
   componentDidUpdate(_, prevState) {
-    if (prevState.gallery !== this.state.gallery) {
-      this.setState({ loading: false });
+    if (
+      prevState.page !== this.state.page ||
+      this.state.name !== prevState.name
+    ) {
+      this.setState({ loading: true });
+      getImage(this.state.name, this.state.page)
+        .then(data =>
+          this.setState(prevState => {
+            return { gallery: [...prevState.gallery, ...data.hits] };
+          })
+        )
+        .finally(() => this.setState({ loading: false }));
     }
   }
 
   handleSubmit = query => {
-    if (query.trim().length === 0) {
-      return;
-    }
+    this.setState({ name: query, page: 1, gallery: [] });
 
-    this.setState({ query, loading: true });
+    // if (query.trim().length === 0) {
+    //   return;
+    // }
 
-    getImage(query, this.state.page).then(data =>
-      this.setState({
-        gallery: [...data.hits],
-        total: data.totalHits,
-      })
-    );
+    // this.setState({ query, loading: true });
+
+    // getImage(query, this.state.page).then(data =>
+    //   this.setState({
+    //     gallery: [...data.hits],
+    //     total: data.totalHits,
+    //   })
+    // );
   };
-  handleLoadMoreBtn = async () => {
-    await this.setState(prevState => {
+  handleLoadMoreBtn = () => {
+    this.setState(prevState => {
       return { page: prevState.page + 1, loading: true };
     });
-    getImage(this.state.query, this.state.page).then(data =>
-      this.setState(prevState => {
-        return { gallery: [...prevState.gallery, ...data.hits] };
-      })
-    );
+    // getImage(this.state.query, this.state.page).then(data =>
+    //   this.setState(prevState => {
+    //     return { gallery: [...prevState.gallery, ...data.hits] };
+    //   })
+    // );
   };
 
   onClickGalleryImage = imageURL => {
